@@ -5,12 +5,13 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher.filters.state import State, StatesGroup
 import os
 
+# Получаем токен
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 bot = Bot(token=BOT_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
 
-# Состояния анкеты
+# Определяем состояния анкеты
 class RequestForm(StatesGroup):
     job_type = State()
     location = State()
@@ -18,10 +19,12 @@ class RequestForm(StatesGroup):
     workers = State()
     contact = State()
 
+# /start команда
 @dp.message_handler(commands=["start"])
 async def start_cmd(message: types.Message):
-    await message.reply("Привет! Я твой помощник. Напиши /help, если нужна рабочая сила.")
+    await message.reply("Привет! Я твой помощник. Напиши /help, если тебе нужна рабочая сила.")
 
+# Запуск анкеты
 @dp.message_handler(commands=["help"])
 async def help_cmd(message: types.Message):
     await message.reply("Какой тип работ вам нужен?")
@@ -68,3 +71,7 @@ async def process_contact(message: types.Message, state: FSMContext):
     await message.reply("Спасибо! Мы свяжемся с вами в ближайшее время.")
     await bot.send_message(message.chat.id, summary)
     await state.finish()
+
+# Запуск
+if __name__ == "__main__":
+    executor.start_polling(dp, skip_updates=True)
