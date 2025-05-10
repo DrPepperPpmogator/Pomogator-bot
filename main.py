@@ -52,4 +52,19 @@ async def process_workers(message: types.Message, state: FSMContext):
     await RequestForm.next()
 
 @dp.message_handler(state=RequestForm.contact)
-async
+async def process_contact(message: types.Message, state: FSMContext):
+    await state.update_data(contact=message.text)
+    data = await state.get_data()
+
+    summary = (
+        f"Заявка от {message.from_user.full_name}:\n"
+        f"Тип работ: {data['job_type']}\n"
+        f"Местоположение: {data['location']}\n"
+        f"Дата начала: {data['date']}\n"
+        f"Количество людей: {data['workers']}\n"
+        f"Контакт: {data['contact']}"
+    )
+
+    await message.reply("Спасибо! Мы свяжемся с вами в ближайшее время.")
+    await bot.send_message(message.chat.id, summary)
+    await state.finish()
